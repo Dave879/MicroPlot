@@ -26,7 +26,7 @@ void loop()
   doc[fmt.AddLineGraph("millis", millis() - 5000, millis() + 5000)] = millis();
   if (millis() % 10 == 0)
     doc[fmt.AddStringLog()] = "Ciao" + std::to_string(millis()) + "\n";
-  JsonArray arr = doc.createNestedArray(fmt.AddHeatmap("SX", 8, 8, 0, 100));
+  JsonArray arr = doc.createNestedArray(fmt.AddHeatmap("SX", 8, 8, -560, 143200));
 
   for (size_t i = 0; i < 64; i++)
   {
