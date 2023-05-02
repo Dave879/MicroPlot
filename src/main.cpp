@@ -19,14 +19,22 @@ void setup()
 }
 
 int i = 0;
+int cycle = 0;
 void loop()
 {
   StaticJsonDocument<5000> doc;
+
+
+  
   doc[fmt.AddLineGraph("Random graph", 0, 100)] = rand() % 100;
-  doc[fmt.AddLineGraph("millis", millis() - 5000, millis() + 5000)] = millis();
-  if (millis() % 10 == 0)
+
+  doc[fmt.AddLineGraph("Sensor SX", 0, 2000)] = rand() % 2000;
+
+
+  doc[fmt.AddLineGraph("millis")] = millis();
+  if (cycle % 100 == 0)
     doc[fmt.AddStringLog()] = "Ciao" + std::to_string(millis()) + "\n";
-  JsonArray arr = doc.createNestedArray(fmt.AddHeatmap("SX", 8, 8, -560, 143200));
+  JsonArray arr = doc.createNestedArray(fmt.AddHeatmap("SX", 8, 8, -560, 14200));
 
   for (size_t i = 0; i < 64; i++)
   {
@@ -34,8 +42,9 @@ void loop()
     arr.add(data[i]);
   }
 
-  fmt.ResetIdx();
+  doc[fmt.AddPacketIndex()] = fmt.GetPacketIdx();
 
+  fmt.ResetIdx();
   serializeJson(doc, Serial);
   /*
     // uint16_t reading = analogRead(POT_PIN);
@@ -59,4 +68,5 @@ void loop()
   */
   // Serial.print(millis());
   // Serial.println(" millisecondi");
+  cycle++;
 }
