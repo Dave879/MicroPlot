@@ -5,6 +5,9 @@
 #include <string>
 #include <iomanip>
 
+#define PRINT(x)   Serial.print("{\"0:s\":\""); Serial.print(x);   Serial.print("\"}");
+#define PRINTLN(x)   Serial.print("{\"0:s\":\""); Serial.print(x);   Serial.print("\\n\"}");
+
 #define UINT16_TO_HEX std::setfill('0') << std::setw(sizeof(uint16_t) * 2) << std::hex
 #define INT64_TO_HEX std::setfill('0') << std::setw(sizeof(int64_t) * 2) << std::hex
 #define INT32_TO_HEX std::setfill('0') << std::setw(sizeof(int32_t) * 2) << std::hex

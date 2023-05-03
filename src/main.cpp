@@ -6,6 +6,7 @@
 #define SERVO_PIN 0
 #define POT_PIN 15
 
+
 DataFormatter fmt;
 uint32_t data[64] = {0};
 
@@ -20,17 +21,16 @@ void setup()
 
 int i = 0;
 int cycle = 0;
+StaticJsonDocument<5000> doc;
 void loop()
 {
-  StaticJsonDocument<5000> doc;
-
-
   
-  doc[fmt.AddLineGraph("Random graph", 0, 100)] = rand() % 100;
-
+  doc[fmt.AddLineGraph("Random graph", 0, 1000)] = millis();
   doc[fmt.AddLineGraph("Sensor SX", 0, 2000)] = rand() % 2000;
-
-
+doc[fmt.AddStringLog()] = "Original\n";
+  PRINT("Hello");
+  PRINTLN("Ciaooooo");
+/*
   doc[fmt.AddLineGraph("millis")] = millis();
   if (cycle % 100 == 0)
     doc[fmt.AddStringLog()] = "Ciao" + std::to_string(millis()) + "\n";
@@ -41,12 +41,16 @@ void loop()
     data[i] = i;
     arr.add(data[i]);
   }
+*/
+
+  //Serial.print("{ \"0:i\":");
 
   doc[fmt.AddPacketIndex()] = fmt.GetPacketIdx();
 
   fmt.ResetIdx();
   serializeJson(doc, Serial);
-  /*
+  doc.clear();
+/*
     // uint16_t reading = analogRead(POT_PIN);
     while (Serial.available() == 0)
     {
@@ -57,8 +61,7 @@ void loop()
     i = teststr.toInt();
     analogWrite(SERVO_PIN, i);
     Serial.println(i);
-  */
-  /*
+
    analogWrite(SERVO_PIN, 0);
    delay(400);
    analogWrite(SERVO_PIN, 1);
@@ -68,5 +71,5 @@ void loop()
   */
   // Serial.print(millis());
   // Serial.println(" millisecondi");
-  cycle++;
+  //cycle++;
 }
