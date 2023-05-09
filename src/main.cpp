@@ -6,7 +6,6 @@
 #define SERVO_PIN 0
 #define POT_PIN 15
 
-
 DataFormatter fmt;
 uint32_t data[64] = {0};
 
@@ -14,7 +13,9 @@ void setup()
 {
   Serial.begin(115200);
   delay(1000);
-  Serial.println("Initializing...");
+
+  Serial.println("Initializing... With no special packet structure");
+  PRINTLN("Initializing... With special packet structure");
   // pinMode(SERVO_PIN, OUTPUT);
   // pinMode(POT_PIN, INPUT);
 }
@@ -25,32 +26,29 @@ StaticJsonDocument<5000> doc;
 void loop()
 {
   
-  doc[fmt.AddLineGraph("Random graph", 0, 1000)] = millis();
+  doc[fmt.AddLineGraph("Random graph", 0, 1000)] = rand() % 500 + 250;
   doc[fmt.AddLineGraph("Sensor SX", 0, 2000)] = rand() % 2000;
-doc[fmt.AddStringLog()] = "Original\n";
-  PRINT("Hello");
-  PRINTLN("Ciaooooo");
-/*
+
   doc[fmt.AddLineGraph("millis")] = millis();
-  if (cycle % 100 == 0)
-    doc[fmt.AddStringLog()] = "Ciao" + std::to_string(millis()) + "\n";
-  JsonArray arr = doc.createNestedArray(fmt.AddHeatmap("SX", 8, 8, -560, 14200));
+
+  JsonArray arr = doc.createNestedArray(fmt.AddHeatmap("Test Heatmap", 8, 8, 0, 1000));
 
   for (size_t i = 0; i < 64; i++)
   {
-    data[i] = i;
+    data[i] = rand() % 1000;
     arr.add(data[i]);
   }
-*/
 
-  //Serial.print("{ \"0:i\":");
+  doc[fmt.AddRepeatedMessage()] = "Serial8 bits available: " + std::to_string(rand() % 3);
+  doc[fmt.AddRepeatedMessage()] = "Repeated message test: " + std::to_string(millis());
 
-  doc[fmt.AddPacketIndex()] = fmt.GetPacketIdx();
+  doc[fmt.AddPacketIndex()] = fmt.GetAndIncrementPacketIdx();
 
   fmt.ResetIdx();
   serializeJson(doc, Serial);
   doc.clear();
-/*
+
+  /*
     // uint16_t reading = analogRead(POT_PIN);
     while (Serial.available() == 0)
     {
