@@ -26,11 +26,11 @@ StaticJsonDocument<5000> doc;
 void loop()
 {
   
+/*
   doc[fmt.AddLineGraph("Random graph", 0, 1000)] = rand() % 500 + 250;
+
   doc[fmt.AddLineGraph("Sensor SX", 0, 2000)] = rand() % 2000;
-
   doc[fmt.AddLineGraph("millis")] = millis();
-
   JsonArray arr = doc.createNestedArray(fmt.AddHeatmap("Test Heatmap", 8, 8, 0, 1000));
 
   for (size_t i = 0; i < 64; i++)
@@ -39,15 +39,16 @@ void loop()
     arr.add(data[i]);
   }
 
-  doc[fmt.AddRepeatedMessage()] = "Serial8 bits available: " + std::to_string(rand() % 3);
-  doc[fmt.AddRepeatedMessage()] = "Repeated message test: " + std::to_string(millis());
-
+  doc[fmt.AddRepeatedMessage()] = "Serial8 bits available: ";
+  doc[fmt.AddRepeatedMessage()] = "Repeated message test: ";
   doc[fmt.AddPacketIndex()] = fmt.GetAndIncrementPacketIdx();
+
 
   fmt.ResetIdx();
   serializeJson(doc, Serial);
   doc.clear();
-
+*/
+  Serial.print("{\"0&i\":1}{\"0&i\":1}{\"0&i\":1}{\"0&i\":1}{\"0&i\":1}{\"0&i\":1}{\"0&i\":1}");
   /*
     // uint16_t reading = analogRead(POT_PIN);
     while (Serial.available() == 0)

@@ -5,11 +5,11 @@
 #include <stdio.h>
 
 #define PRINT(x)                \
-	Serial.print("{\"0£s\":\""); \
+	Serial.print("{\"0&s\":\""); \
 	Serial.print(x);             \
 	Serial.print("\"}");
 #define PRINTLN(x)              \
-	Serial.print("{\"0£s\":\""); \
+	Serial.print("{\"0&s\":\""); \
 	Serial.print(x);             \
 	Serial.print("\\n\"}");
 
@@ -25,8 +25,8 @@ class DataFormatter
 private:
 	unsigned int graph_index_;
 	unsigned int heatmap_index_;
-	unsigned int rep_string_;
 	unsigned long long pkt_idx_;
+	unsigned int rep_string_;
 	char numstr_[21];
 	char numstr__[21];
 	char numstr___[21];
