@@ -1,13 +1,8 @@
 #include <Arduino.h>
-#include <ArduinoJson.h>
+#define ARDUPLOT_DEBUG true
+#include "ArduPlot.h"
 
-#include "data_formatter.h"
-
-#define SERVO_PIN 0
-#define POT_PIN 15
-
-#define HEATMAP_SIZE 400
-DataFormatter fmt;
+#define HEATMAP_SIZE 225
 uint32_t data[HEATMAP_SIZE] = {0};
 
 void setup()
@@ -15,92 +10,50 @@ void setup()
   Serial.begin(115200);
   delay(1000);
 
-  Serial.println("Initializing... With no special packet structure");
-  PRINTLN("Initializing... With special packet structure");
-  // pinMode(SERVO_PIN, OUTPUT);
-  // pinMode(POT_PIN, INPUT);
+  Serial.println("Initializing...");
 }
 
-int i = 0;
-int cycle = 0;
-StaticJsonDocument<170000> doc;
-JsonArray arr;
-bool toggle = false;
+uint32_t past_time = millis();
+
 void loop()
 {
-
-  doc[fmt.AddLineGraph("Random graph", 2)] = rand() % 500 + 250;
-
-  doc[fmt.AddLineGraph("Sensor DX", 2)] = rand() % 20;
-  doc[fmt.AddLineGraph("Test 1", 1)] = rand() % 2000-3000;
-  doc[fmt.AddLineGraph("Test 2", 1)] = rand() % 3000+50000;
-  doc[fmt.AddLineGraph("Test 3", 1)] = rand() % 300+5000;
-  doc[fmt.AddLineGraph("Test 4", 1)] = rand() % 6000-15000;
-  doc[fmt.AddLineGraph("Test 5", 1)] = rand() % 5000;
-  doc[fmt.AddLineGraph("Test 6", 1)] = rand() % 5300 - 9000;
-  doc[fmt.AddLineGraph("Test 7", 1)] = millis() % 7;
-  doc[fmt.AddLineGraph("Test 8", 1)] = rand() % 395 - 636;
-  doc[fmt.AddLineGraph("Test 9", 1)] = rand() % 30-3500;
-  doc[fmt.AddLineGraph("Test 10", 1)] = rand() % 2000-10000;
-  doc[fmt.AddLineGraph("millis")] = millis();
-
-  arr = doc.createNestedArray(fmt.AddHeatmap("Test Heatmap", sqrt(HEATMAP_SIZE), sqrt(HEATMAP_SIZE), 0, 1000));
-  /*
-  if (toggle)
+  for (size_t i = 0; i < HEATMAP_SIZE; i++)
   {
-    toggle = false;
-    for (size_t i = 0; i < HEATMAP_SIZE; i++)
-    {
-      data[i] = i;
-      arr.add(data[i]);
-    }
+    data[i] = rand() % 1000;
   }
-  else
+
+  ARDUPLOT_SHARED_LINE_GRAPH("Random graph", rand() % 500 + 250, "2");
+  ARDUPLOT_SHARED_LINE_GRAPH("Sensor DX", rand() % 20, "2");
+  ARDUPLOT_SHARED_LINE_GRAPH("Random graph", rand() % 500 + 250, "2");
+  ARDUPLOT_SHARED_LINE_GRAPH("Sensor DX", rand() % 20, "2");
+  ARDUPLOT_SHARED_LINE_GRAPH("Test 1", rand() % 2000 - 3000, "1");
+  ARDUPLOT_SHARED_LINE_GRAPH("Test 2", rand() % 3000 + 50000, "1");
+  ARDUPLOT_SHARED_LINE_GRAPH("Test 3", rand() % 300 + 5000, "1");
+  ARDUPLOT_SHARED_LINE_GRAPH("Test 4", rand() % 6000 - 15000, "1");
+  ARDUPLOT_SHARED_LINE_GRAPH("Test 5", rand() % 5000, "1");
+  ARDUPLOT_SHARED_LINE_GRAPH("Test 6", rand() % 5300 - 9000, "1");
+  ARDUPLOT_SHARED_LINE_GRAPH("Test 7", millis() % 7, "1");
+  ARDUPLOT_SHARED_LINE_GRAPH("Test 8", rand() % 395 - 636, "1");
+  ARDUPLOT_SHARED_LINE_GRAPH("Test 9", rand() % 30 - 3500, "1");
+  ARDUPLOT_SHARED_LINE_GRAPH("Test 10", rand() % 2000 - 10000, "1");
+
+  ArduPlot::LineGraph("Test 11", rand() % 100 + 600, 2);
+
+  ARDUPLOT_LINE_GRAPH("millis", millis());
+  
+  ArduPlot::LineGraph("Standalone", rand() % 1000 - 500);
+
+  ARDUPLOT_HEATMAP("Test Heatmap", "15", "15", data, HEATMAP_SIZE);
+  ArduPlot::Heatmap("Rectangle heatmap", 10, 5, 0, 1000, data, 50);
+
+  float arr[2] = {1.0f, 0.0f};
+  ArduPlot::Heatmap("Testing", 1, 2, arr, 2);
+  ARDUPLOT_HEATMAP("Testing fast", "1", "2", arr, 2);
+
+  if (past_time + 1000 < millis())
   {
-    toggle = true;
-    for (int32_t i = 10000; i >= 0; i--)
-    {
-      data[i] = i;
-      arr.add(data[i]);
-    }
+    past_time = millis();
+    Serial.print("Console test... ");
+    Serial.println(millis());
   }
-  */
-     for (size_t i = 0; i < HEATMAP_SIZE; i++)
-    {
-      data[i] = rand() % 1000;
-      arr.add(data[i]);
-    }
-
-
-  doc[fmt.AddRepeatedMessage()] = "Serial8 bits available: ";
-  doc[fmt.AddRepeatedMessage()] = "Repeated message test: ";
-  doc[fmt.AddPacketIndex()] = fmt.GetAndIncrementPacketIdx();
-
-  fmt.ResetIdx();
-  serializeJson(doc, Serial);
-  doc.clear();
-
-  // Serial.print("{\"0&i\":1}{\"0&i\":1}{\"0&i\":1}{\"0&i\":1}{\"0&i\":1}{\"0&i\":1}{\"0&i\":1}");
-  /*
-    // uint16_t reading = analogRead(POT_PIN);
-    while (Serial.available() == 0)
-    {
-    }                                     // wait for data available
-    delay(10);
-    String teststr = Serial.readString(); // read until timeout
-    teststr.trim();                       // remove any \r \n whitespace at the end of the String
-    i = teststr.toInt();
-    analogWrite(SERVO_PIN, i);
-    Serial.println(i);
-
-   analogWrite(SERVO_PIN, 0);
-   delay(400);
-   analogWrite(SERVO_PIN, 1);
-   delay(400);
-   analogWrite(SERVO_PIN, 240);
-   delay(400);
-  */
-  // Serial.print(millis());
-  // Serial.println(" millisecondi");
-  // cycle++;
 }
